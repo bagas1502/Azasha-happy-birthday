@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Azasha — Квесты</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+    width: 100%;
+    min-height: 100%;
+}
+
+html {
+    background: #f7dcae;
+}
+
+body {
+    min-height: 100svh;
+    overflow-x: hidden;
+    font-family: "Baloo 2", sans-serif;
+    background: #f7dcae;
+}
+
+/* =========================================================
+   СЦЕНА
+   ========================================================= */
+
+.scene {
+    position: relative;
+    width: 100%;
+    max-width: 853px;
+    margin: 0 auto;
+    line-height: 0;
+    overflow: hidden;
+    will-change: transform, filter, opacity;
+    transform: translate3d(0, 0, 0);
+    filter: blur(0);
+    opacity: 1;
+}
+
+/* =========================================================
+   ФОН
+   ========================================================= */
+
+.scene-bg {
+    display: block;
+
+    width: 100%;
+    height: auto;
+
+    /*
+       Очень важно:
+       сохраняем реальные пропорции PNG.
+       По высоте картинка НЕ растягивается.
+    */
+
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-user-drag: none;
+    user-drag: none;
+    -webkit-touch-callout: none;
+
+    pointer-events: none;
+}
+
+/* =========================================================
+   НАДПИСЬ
+   ========================================================= */
+
+.soon-title {
+    position: absolute;
+
+    top: 18%;
+    left: 50%;
+
+    width: min(78%, 650px);
+    height: auto;
+
+    transform: translateX(-50%);
+
+    z-index: 2;
+
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-user-drag: none;
+    user-drag: none;
+    -webkit-touch-callout: none;
+
+    pointer-events: none;
+}
+
+/* =========================================================
+   ПЛАВНОЕ ПАДЕНИЕ ВО ВТОРУЮ СЦЕНУ
+   ========================================================= */
+
+/*
+   Здесь нет нескольких независимых анимаций.
+
+   Вся сцена проходит один непрерывный путь:
+   снизу → вверх → очень мягкое замедление → остановка.
+
+   Главная идея:
+   - первые 50-60% пути проходят быстрее;
+   - последние ~40% специально растянуты;
+   - в самом конце скорость почти нулевая.
+*/
+
+28% {
+        transform: translate3d(0, 63vh, 0);
+        filter: blur(8px);
+        opacity: .72;
+    }
+
+    52% {
+        transform: translate3d(0, 38vh, 0);
+        filter: blur(6px);
+        opacity: .82;
+    }
+
+    70% {
+        transform: translate3d(0, 20vh, 0);
+        filter: blur(3.8px);
+        opacity: .90;
+    }
+
+    84% {
+        transform: translate3d(0, 8vh, 0);
+        filter: blur(2px);
+        opacity: .96;
+    }
+
+    92% {
+        transform: translate3d(0, 2.5vh, 0);
+        filter: blur(.75px);
+        opacity: .985;
+    }
+
+    97% {
+        transform: translate3d(0, .45vh, 0);
+        filter: blur(.18px);
+        opacity: .998;
+    }
+
+    100% {
+        transform: translate3d(0, 0, 0);
+        filter: blur(0);
+        opacity: 1;
+    }
+}
+
+/* =========================================================
+   ЗАЩИТА КАРТИНОК ОТ ВЫДЕЛЕНИЯ
+   ========================================================= */
+
+img {
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+
+    -webkit-user-drag: none !important;
+    user-drag: none !important;
+
+    -webkit-touch-callout: none !important;
+
+    pointer-events: none !important;
+}
+
+/* =========================================================
+   ТЕЛЕФОН
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+    .scene {
+        width: 100%;
+        max-width: none;
+    }
+
+    .soon-title {
+        top: 16%;
+        width: 82%;
+    }
+}
+
+/* =========================================================
+   МАЛЕНЬКИЙ ТЕЛЕФОН
+   ========================================================= */
+
+@media (max-width: 380px) {
+
+    .soon-title {
+        top: 15%;
+        width: 86%;
+    }
+}
+
+/* =========================================================
+   ЕСЛИ У ПОЛЬЗОВАТЕЛЯ ОТКЛЮЧЕНЫ АНИМАЦИИ
+   ========================================================= */
+
+
+</style>
+
+<style id="image-protection-final">
+html, body, img {
+    -webkit-user-select: none !important;
+    user-select: none !important;
+    -webkit-touch-callout: none !important;
+}
+img {
+    -webkit-user-drag: none !important;
+    user-drag: none !important;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="scene" id="questScene">
+
+    <!-- Только фон -->
+    <img
+        class="scene-bg"
+        src="a_tall_vertical_illustration_background_scene_a.png"
+        alt=""
+        draggable="false"
+    >
+
+    <!-- Только отдельная PNG-надпись -->
+    <img
+        class="soon-title"
+        src="soon-title.png"
+        alt=""
+        draggable="false"
+    >
+
+</div>
+
+<script>
+/* =========================================================
+   ЗАЩИТА PNG
+   ========================================================= */
+
+document.addEventListener(
+    "contextmenu",
+    function (event) {
+        if (event.target.closest("img")) {
+            event.preventDefault();
+        }
+    },
+    true
+);
+
+document.addEventListener(
+    "dragstart",
+    function (event) {
+        if (event.target.closest("img")) {
+            event.preventDefault();
+        }
+    },
+    true
+);
+
+document.addEventListener(
+    "selectstart",
+    function (event) {
+        if (event.target.closest("img")) {
+            event.preventDefault();
+        }
+    },
+    true
+);
+
+document.addEventListener(
+    "mousedown",
+    function (event) {
+        if (event.target.closest("img")) {
+            event.preventDefault();
+        }
+    },
+    true
+);
+
+document.addEventListener(
+    "touchstart",
+    function (event) {
+        if (event.target.closest("img")) {
+            event.preventDefault();
+        }
+    },
+    {
+        passive: false,
+        capture: true
+    }
+);
+
+/* =========================================================
+   ДОЖИДАЕМСЯ ПОЛНОЙ ЗАГРУЗКИ PNG
+   Чтобы анимация начиналась уже тогда,
+   когда браузер знает настоящую высоту фона.
+   ========================================================= */
+
+window.addEventListener("load", function () {
+
+    const scene =
+        document.getElementById("questScene");
+
+    if (!scene) {
+        return;
+    }
+
+    scene.classList.add("scene-ready");
+});
+</script>
+
+
+<script>
+(function () {
+    const scene = document.getElementById("questScene");
+    if (!scene) return;
+
+    // Prevent the browser from scrolling during the entrance.
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+
+    const duration = 3600;
+    const startOffset = Math.max(window.innerHeight * 1.18, 680);
+    const start = performance.now();
+
+    // Quintic ease-out: fast at first, then extremely gentle at the end.
+    function easeOutQuint(t) {
+        return 1 - Math.pow(1 - t, 5);
+    }
+
+    function frame(now) {
+        const raw = Math.min((now - start) / duration, 1);
+        const progress = easeOutQuint(raw);
+
+        const y = startOffset * (1 - progress);
+
+        // Blur follows speed and disappears gradually as the scene settles.
+        const speedFactor = 1 - progress;
+        const blur = 8.5 * speedFactor;
+        const opacity = 0.72 + 0.28 * progress;
+
+        scene.style.transform =
+            "translate3d(0," + y.toFixed(2) + "px,0)";
+        scene.style.filter =
+            "blur(" + blur.toFixed(2) + "px)";
+        scene.style.opacity =
+            opacity.toFixed(3);
+
+        if (raw < 1) {
+            requestAnimationFrame(frame);
+        } else {
+            scene.style.transform = "translate3d(0,0,0)";
+            scene.style.filter = "blur(0)";
+            scene.style.opacity = "1";
+
+            document.documentElement.style.overflow = "";
+            document.body.style.overflow = "";
+        }
+    }
+
+    // Start on the first rendered frame, ensuring the initial state is visible.
+    scene.style.transform =
+        "translate3d(0," + startOffset.toFixed(2) + "px,0)";
+    scene.style.filter = "blur(8.5px)";
+    scene.style.opacity = "0.72";
+
+    requestAnimationFrame(function () {
+        requestAnimationFrame(frame);
+    });
+})();
+</script>
+
+
+<script id="image-protection-js">
+["contextmenu","dragstart","selectstart","mousedown"].forEach(function (eventName) {
+    document.addEventListener(eventName, function (e) {
+        if (e.target && e.target.closest && e.target.closest("img")) {
+            e.preventDefault();
+        }
+    }, true);
+});
+</script>
+
+</body>
+</html>
